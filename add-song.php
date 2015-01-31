@@ -9,8 +9,24 @@
   $genreQuery = new GenreQuery();
   $genres = $genreQuery->getAll();
 
-
+  if (isset($_POST['submit'])) {
+    $song = new Song();
+    $song->setTitle($_POST['title']);
+    $song->setArtistId($_POST['artistId']);
+    $song->setGenreId($_POST['genreId']);
+    $song->setPrice($_POST['price']);
+    
+    if (empty($_POST['title'])) {
+      $message = "Please enter a title!"; 
+    } else if (empty($_POST['artistId'])) {
+      $message = "Please choose an artist!";
+    } else {
+      $song->save();
+      $message = "The song " . $song->getTitle() . " with an ID of " . $song->getId() . " was inserted successfully!";
+    }       
+  }
 ?>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -29,13 +45,20 @@
   <body>
     <div class="container">     
       <div class="row">
-        <div class="add-song col-md-4 col-md-offset-4">
-
-          <form method="post"> 
+        <div class="col-md-4 col-md-offset-4">
+          
+          <p>
+            <?php if(isset($_POST['submit'])){
+              echo $message;
+            }
+            ?>
+          </p>
+          
+          <form method="post" class="add-song"> 
             <div class="input-group add-song">
               <input type="text" class="form-control" name="title" placeholder="Song Title">
               <span>
-                <select class="selectpicker" data-live-search="true" data-width="100%">
+                <select name="artistId" class="selectpicker" data-live-search="true" data-width="100%">
                   <option data-hidden="true" value="">Artist</option>
                   <?php
                     foreach($artists as $artist){
@@ -43,7 +66,7 @@
                     }
                   ?>
                 </select>
-                <select class="selectpicker" data-live-search="true" data-width="100%">
+                <select name="genreId" class="selectpicker" data-live-search="true" data-width="100%">
                   <option data-hidden="true" value="">Genre</option>
                   <?php
                     foreach($genres as $genre){
@@ -53,7 +76,8 @@
                 </select>
               </span>
               <input type="text" class="form-control" name="price" placeholder="Price" style="margin-top:8px">
-              <button class="btn btn-default" type="submit" value="add" style="width:100%">Add</button>
+              
+              <button class="btn btn-default" type="submit" name="submit" style="width:100%">Add</button>
             </div>
           </form>
           

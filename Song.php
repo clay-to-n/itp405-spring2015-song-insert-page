@@ -6,6 +6,7 @@ class Song extends Database
 {
   private $title;
   private $id;
+  private $artistId;
   private $genreId;
   private $price;
   
@@ -15,9 +16,9 @@ class Song extends Database
     $this->title = $title;
   }
   //  setArtistId($id) - sets an artist_id instance property
-  public function setArtistId($id)
+  public function setArtistId($artistId)
   {
-    $this->id = $id;
+    $this->artistId = $artistId;
   }
   //  setGenreId($genre_id) - sets a genre_id instance property
   public function setGenreId($genreId)
@@ -32,7 +33,18 @@ class Song extends Database
   //  save() - performs the insert
   public function save()
   {
+    $sql = "
+      INSERT INTO songs (title, artist_id, genre_id, price, added, created_at, updated_at) 
+      VALUES (?, ?, ?, ?, NOW(), NOW(), NOW())
+    ";
+    $statement = static::$pdo->prepare($sql);
+    $statement->bindParam(1, $this->title);
+    $statement->bindParam(2, $this->artistId);
+    $statement->bindParam(3, $this->genreId);
+    $statement->bindParam(4, $this->price);
+    $statement->execute();
     
+    $this->id = static::$pdo->lastInsertId();
   }
   //  getTitle() - returns the song title
   public function getTitle()
